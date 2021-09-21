@@ -1,6 +1,7 @@
 import pygame
 
 from nlc_dino_runner.Components.dinosaur import Dinosaur
+from nlc_dino_runner.Components.power_ups.power_up_manager import PowerUpManager
 from nlc_dino_runner.utils import text_utils
 from nlc_dino_runner.Components.obstacles.obstaclesManager import ObstaclesManager
 from nlc_dino_runner.utils.constants import TITLE, ICON, SCREEN_WIDTH, SCREEN_HEIGHT, BG, FPS
@@ -15,19 +16,24 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.playing = False
         self.x_pos_bg = 0
-        self.y_pos_bg = 360
+        self.y_pos_bg = 380
         self.game_speed = 20
         self.player = Dinosaur()
-        self.obstacle_manager = ObstaclesManager()
-        #self.cactusSmall = Cactus(SMALL_CACTUS)
-        #self.cactusLarge = Cactus(LARGE_CACTUS)
+        self.obstacles_manager = ObstaclesManager()
+        # self.cactus_small = Cactus(SMALL_CACTUS)
+        # self.cactus_large = Cactus(LARGE_CACTUS)
+        self.power_up_manager = PowerUpManager()
         self.points = 0
         self.running = True
         self.death_count = 0
 
     def run(self):
-        self.obstacle_manager.reset_obstacles()
+        # Game loop: events - update - draw
+        self.obstacles_manager.reset_obstacles()
+        self.power_up_manager.reset_power_ups(self.points)
         self.playing = True
+        self.game_speed = 20
+        self.points = 0
         while self.playing:
             self.event()
             self.update()
@@ -41,26 +47,27 @@ class Game:
     def update(self):
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
-        self.obstacle_manager.update(self)
+        self.obstacles_manager.update(self)
+        self.power_up_manager.update(self.points, self.game_speed, self.player)
 
     def draw(self):
         self.clock.tick(FPS)
         self.screen.fill((255, 255, 255))
         self.score()
-        self.draw_background()
+        self.draw_bg()
         self.player.draw(self.screen)
-        self.obstacle_manager.draw(self.screen)
+        self.obstacles_manager.draw(self.screen)
+        self.power_up_manager.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
 
-    def draw_background(self):
-        image_width = BG.get_width()
+    def draw_bg(self):
+        img_width = BG.get_width()
         self.screen.blit(BG, (self.x_pos_bg, self.y_pos_bg))
+        self.screen.blit(BG, (self.x_pos_bg + img_width, self.y_pos_bg))
 
-        # La imagen se mueve
-        self.screen.blit(BG, (self.x_pos_bg + image_width, self.y_pos_bg))
-        if self.x_pos_bg <= -image_width:
-            self.screen.blit(BG, (self.x_pos_bg + image_width, self.y_pos_bg))
+        if self.x_pos_bg <= -img_width:
+            self.screen.blit(BG, (self.x_pos_bg + img_width, self.y_pos_bg))
             self.x_pos_bg = 0
 
         self.x_pos_bg -= self.game_speed
@@ -72,8 +79,19 @@ class Game:
         score_element, score_element_rect = text_utils.get_score_element(self.points)
         self.screen.blit(score_element, score_element_rect)
 
+    def draw_background(self):
+        image_width = BG.get_width()
+        self.screen.blit(BG, (self.x_pos_bg, self.y_pos_bg))
+        # La imagen se mueve
+        self.screen.blit(BG, (self.x_pos_bg + image_width, self.y_pos_bg))
+        # Reset
+        if self.x_pos_bg <= -image_width:
+            self.screen.blit(BG, (self.x_pos_bg + image_width, self.y_pos_bg))
+            self.x_pos_bg = 0
+
+        self.x_pos_bg -= self.game_speed
+
     def execute(self):
-        print("Execute")
         while self.running:
             if not self.playing:
                 self.show_menu()
@@ -94,6 +112,7 @@ class Game:
                 pygame.display.quit()
                 pygame.quit()
                 exit()
+
             if event.type == pygame.KEYDOWN:
                 self.run()
 
@@ -111,6 +130,7 @@ class Game:
         score, score_rect = text_utils.get_centered_message("Score: " + str(self.points), height=half_screen_height + 100)
         self.screen.blit(score, score_rect)
         self.screen.blit(ICON, ((SCREEN_WIDTH // 2) - 40, (SCREEN_HEIGHT // 2) - 150))
+
 
 
 
