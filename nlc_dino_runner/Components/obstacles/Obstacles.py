@@ -1,5 +1,4 @@
 from pygame.sprite import Sprite
-
 from nlc_dino_runner.utils.constants import SCREEN_WIDTH
 
 
@@ -13,6 +12,7 @@ class Obstacles(Sprite):
 
     def update(self, game_speed, obstacles_list):
         self.rect.x -= game_speed
+
         if self.rect.x < -self.rect.width:
             obstacles_list.pop()
 

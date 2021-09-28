@@ -1,6 +1,6 @@
 import random
 
-from nlc_dino_runner.Components.obstacles.Obstacles import Obstacles
+from nlc_dino_runner.Components.obstacles.obstacles import Obstacles
 from nlc_dino_runner.utils.constants import BIRD
 
 
@@ -16,6 +16,7 @@ class Bird(Obstacles):
     def draw(self, screen):
         if self.step_index >= 20:
             self.step_index = 0
-        self.image = BIRD[0] if self.step_index < 10 else BIRD[1]
+
+        self.image = BIRD[self.step_index // 10]
         screen.blit(self.image, self.rect)
         self.step_index += 1
