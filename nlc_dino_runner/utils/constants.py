@@ -1,4 +1,5 @@
 import pygame
+import sys
 import os
 
 # Global Constants
@@ -6,7 +7,17 @@ TITLE = 'DIno Runner'
 SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
 FPS = 30
-IMG_DIR = os.path.join(os.path.dirname(__file__), "..", "assets")
+
+try:
+    # Pyinstaller creates a temp folder and stores path in _MEIPASS
+    base_path = sys._MEIPASS
+except Exception:
+    base_path = os.path.abspath(".")
+
+#IMG_DIR = os.path.join(os.path.dirname(__file__), "..", "assets")
+IMG_DIR = os.path.join(base_path, "assets")
+FONT_PATH = os.path.join(IMG_DIR, "freesansbold.ttf")
+
 DEFAULT_NUMBER_OF_LIVES = 5
 
 DEFAULT_TYPE = "default"

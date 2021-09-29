@@ -1,9 +1,9 @@
 import pygame
 
-from nlc_dino_runner.utils.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from nlc_dino_runner.utils.constants import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_PATH
 
 
-FONT_STYLE = 'freesansbold.ttf'
+FONT_STYLE = FONT_PATH
 black_color = (0, 0, 0)
 white_color = (255, 255, 255)
 
